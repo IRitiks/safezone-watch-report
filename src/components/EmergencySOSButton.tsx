@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
-import { SosIcon, AlertTriangle } from 'lucide-react';
+import { Siren, AlertTriangle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useData } from '@/context/DataContext';
 
@@ -18,7 +18,6 @@ const EmergencySOSButton: React.FC<EmergencySOSButtonProps> = ({ fullScreen = fa
   const activateSOS = () => {
     if (active) return;
     
-    // Get location
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
@@ -27,7 +26,6 @@ const EmergencySOSButton: React.FC<EmergencySOSButtonProps> = ({ fullScreen = fa
             longitude: position.coords.longitude
           });
           
-          // Start a 3-second countdown
           setCountdown(3);
           const interval = setInterval(() => {
             setCountdown((prev) => {
@@ -48,7 +46,6 @@ const EmergencySOSButton: React.FC<EmergencySOSButtonProps> = ({ fullScreen = fa
             variant: "destructive"
           });
           
-          // Send alert with default location
           sendEmergencyAlert(40.7128, -74.0060);
         }
       );
@@ -59,7 +56,6 @@ const EmergencySOSButton: React.FC<EmergencySOSButtonProps> = ({ fullScreen = fa
         variant: "destructive"
       });
       
-      // Send alert with default location
       sendEmergencyAlert(40.7128, -74.0060);
     }
   };
@@ -80,9 +76,6 @@ const EmergencySOSButton: React.FC<EmergencySOSButtonProps> = ({ fullScreen = fa
         description: "Your emergency alert has been dispatched to local authorities.",
         variant: "destructive"
       });
-      
-      // In a real app, you might start a recurring location update
-      // and potentially establish a direct channel with emergency services
       
     } catch (error) {
       console.error("Error sending emergency alert:", error);
@@ -110,7 +103,7 @@ const EmergencySOSButton: React.FC<EmergencySOSButtonProps> = ({ fullScreen = fa
         {active ? (
           <div className="text-center">
             <div className="w-36 h-36 rounded-full bg-red-500 flex items-center justify-center mb-6 animate-pulse-emergency mx-auto">
-              <SosIcon className="w-16 h-16 text-white" />
+              <Siren className="w-16 h-16 text-white" />
             </div>
             <h2 className="text-2xl font-bold text-red-500 mb-2">Emergency Alert Active</h2>
             <p className="text-gray-600 mb-6">
@@ -147,7 +140,7 @@ const EmergencySOSButton: React.FC<EmergencySOSButtonProps> = ({ fullScreen = fa
               className="w-36 h-36 rounded-full bg-red-500 hover:bg-red-600 flex items-center justify-center mb-6"
               onClick={activateSOS}
             >
-              <SosIcon className="w-16 h-16" />
+              <Siren className="w-16 h-16" />
             </Button>
             <h2 className="text-2xl font-bold mb-2">Emergency SOS</h2>
             <p className="text-gray-600 mb-2">
@@ -163,7 +156,6 @@ const EmergencySOSButton: React.FC<EmergencySOSButtonProps> = ({ fullScreen = fa
     );
   }
   
-  // Standard button version
   return (
     <Button 
       variant="destructive" 
@@ -171,7 +163,7 @@ const EmergencySOSButton: React.FC<EmergencySOSButtonProps> = ({ fullScreen = fa
       className={`${active ? 'animate-pulse-emergency' : ''}`}
       onClick={active ? cancelSOS : activateSOS}
     >
-      <SosIcon className="mr-2 h-5 w-5" />
+      <Siren className="mr-2 h-5 w-5" />
       {active ? 'Cancel Emergency Alert' : 'Activate Emergency SOS'}
     </Button>
   );

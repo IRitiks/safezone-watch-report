@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
-import { SosIcon, AlertTriangle, MapPin, Shield } from 'lucide-react';
+import { Siren, AlertTriangle, MapPin, Shield } from 'lucide-react';
 
 const Navbar: React.FC = () => {
   const location = useLocation();
@@ -31,7 +31,7 @@ const Navbar: React.FC = () => {
           </Link>
           
           <Link to="/emergency" className={`flex flex-col items-center p-2 ${isActive('/emergency') ? 'text-safezone-red' : 'text-red-500'}`}>
-            <SosIcon size={24} />
+            <Siren size={24} />
             <span className="text-xs mt-1">SOS</span>
           </Link>
         </div>
@@ -62,7 +62,7 @@ const Navbar: React.FC = () => {
             </Link>
             <Link to="/emergency">
               <Button variant="destructive" className="animate-pulse-emergency">
-                <SosIcon className="mr-2 h-4 w-4" />
+                <Siren className="mr-2 h-4 w-4" />
                 Emergency SOS
               </Button>
             </Link>
