@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import { DataProvider } from "./context/DataContext";
+import React from "react"; // Add explicit React import
 
 // Pages
 import Home from "./pages/Home";
@@ -40,52 +41,54 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 };
 
 const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <AuthProvider>
-        <DataProvider>
-          <Toaster />
-          <Sonner />
-          <BrowserRouter>
-            <Routes>
-              {/* Public Routes */}
-              <Route path="/" element={<Home />} />
-              <Route path="/report" element={<ReportIncident />} />
-              <Route path="/incidents" element={<ViewIncidents />} />
-              <Route path="/emergency" element={<EmergencySOS />} />
-              <Route path="/safety-tips" element={<SafetyTips />} />
-              <Route path="/admin/login" element={<AdminLogin />} />
-              
-              {/* Admin Protected Routes */}
-              <Route path="/admin" element={
-                <ProtectedRoute>
-                  <AdminDashboard />
-                </ProtectedRoute>
-              } />
-              <Route path="/admin/reports" element={
-                <ProtectedRoute>
-                  <AdminReports />
-                </ProtectedRoute>
-              } />
-              <Route path="/admin/map" element={
-                <ProtectedRoute>
-                  <AdminMap />
-                </ProtectedRoute>
-              } />
-              <Route path="/admin/analytics" element={
-                <ProtectedRoute>
-                  <AdminAnalytics />
-                </ProtectedRoute>
-              } />
-              
-              {/* Catch-all for 404 */}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </BrowserRouter>
-        </DataProvider>
-      </AuthProvider>
-    </TooltipProvider>
-  </QueryClientProvider>
+  <React.StrictMode>
+    <QueryClientProvider client={queryClient}>
+      <BrowserRouter>
+        <AuthProvider>
+          <DataProvider>
+            <TooltipProvider>
+              <Toaster />
+              <Sonner />
+              <Routes>
+                {/* Public Routes */}
+                <Route path="/" element={<Home />} />
+                <Route path="/report" element={<ReportIncident />} />
+                <Route path="/incidents" element={<ViewIncidents />} />
+                <Route path="/emergency" element={<EmergencySOS />} />
+                <Route path="/safety-tips" element={<SafetyTips />} />
+                <Route path="/admin/login" element={<AdminLogin />} />
+                
+                {/* Admin Protected Routes */}
+                <Route path="/admin" element={
+                  <ProtectedRoute>
+                    <AdminDashboard />
+                  </ProtectedRoute>
+                } />
+                <Route path="/admin/reports" element={
+                  <ProtectedRoute>
+                    <AdminReports />
+                  </ProtectedRoute>
+                } />
+                <Route path="/admin/map" element={
+                  <ProtectedRoute>
+                    <AdminMap />
+                  </ProtectedRoute>
+                } />
+                <Route path="/admin/analytics" element={
+                  <ProtectedRoute>
+                    <AdminAnalytics />
+                  </ProtectedRoute>
+                } />
+                
+                {/* Catch-all for 404 */}
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </TooltipProvider>
+          </DataProvider>
+        </AuthProvider>
+      </BrowserRouter>
+    </QueryClientProvider>
+  </React.StrictMode>
 );
 
 export default App;
