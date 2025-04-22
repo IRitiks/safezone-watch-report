@@ -1,7 +1,6 @@
-
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
-import { Sos, AlertTriangle } from 'lucide-react';
+import { SosIcon, AlertTriangle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useData } from '@/context/DataContext';
 
@@ -111,7 +110,7 @@ const EmergencySOSButton: React.FC<EmergencySOSButtonProps> = ({ fullScreen = fa
         {active ? (
           <div className="text-center">
             <div className="w-36 h-36 rounded-full bg-red-500 flex items-center justify-center mb-6 animate-pulse-emergency mx-auto">
-              <Sos className="w-16 h-16 text-white" />
+              <SosIcon className="w-16 h-16 text-white" />
             </div>
             <h2 className="text-2xl font-bold text-red-500 mb-2">Emergency Alert Active</h2>
             <p className="text-gray-600 mb-6">
@@ -148,7 +147,7 @@ const EmergencySOSButton: React.FC<EmergencySOSButtonProps> = ({ fullScreen = fa
               className="w-36 h-36 rounded-full bg-red-500 hover:bg-red-600 flex items-center justify-center mb-6"
               onClick={activateSOS}
             >
-              <Sos className="w-16 h-16" />
+              <SosIcon className="w-16 h-16" />
             </Button>
             <h2 className="text-2xl font-bold mb-2">Emergency SOS</h2>
             <p className="text-gray-600 mb-2">
@@ -172,7 +171,7 @@ const EmergencySOSButton: React.FC<EmergencySOSButtonProps> = ({ fullScreen = fa
       className={`${active ? 'animate-pulse-emergency' : ''}`}
       onClick={active ? cancelSOS : activateSOS}
     >
-      <Sos className="mr-2 h-5 w-5" />
+      <SosIcon className="mr-2 h-5 w-5" />
       {active ? 'Cancel Emergency Alert' : 'Activate Emergency SOS'}
     </Button>
   );
