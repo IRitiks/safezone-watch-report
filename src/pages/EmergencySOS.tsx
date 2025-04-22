@@ -47,7 +47,7 @@ const EmergencySOS = () => {
                     <div className="font-medium">General Emergency</div>
                     <div className="text-sm text-gray-500">Police, Fire, Ambulance</div>
                   </div>
-                  <div className="text-xl font-bold text-red-500">911</div>
+                  <div className="text-xl font-bold text-red-500">102</div>
                 </div>
                 
                 <div className="flex justify-between items-center border-b pb-2">
@@ -55,7 +55,7 @@ const EmergencySOS = () => {
                     <div className="font-medium">Police Non-Emergency</div>
                     <div className="text-sm text-gray-500">For reporting non-urgent matters</div>
                   </div>
-                  <div className="text-lg font-bold text-safezone-purple">311</div>
+                  <div className="text-lg font-bold text-safezone-purple">100</div>
                 </div>
                 
                 <div className="flex justify-between items-center border-b pb-2">
@@ -63,7 +63,7 @@ const EmergencySOS = () => {
                     <div className="font-medium">Crisis Hotline</div>
                     <div className="text-sm text-gray-500">Mental health crisis support</div>
                   </div>
-                  <div className="text-lg font-bold text-safezone-purple">988</div>
+                  <div className="text-lg font-bold text-safezone-purple">112</div>
                 </div>
               </div>
             </CardContent>
