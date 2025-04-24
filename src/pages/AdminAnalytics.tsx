@@ -133,6 +133,7 @@ const AdminAnalytics = () => {
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+          {/* Stat cards */}
           <Card>
             <CardHeader className="pb-2">
               <CardTitle className="text-lg flex items-center">
@@ -193,28 +194,28 @@ const AdminAnalytics = () => {
                   </Select>
                 </div>
               </div>
-              
+            </CardHeader>
+            
+            <CardContent>
               <Tabs value={chartType} onValueChange={(v) => setChartType(v as 'daily' | 'category' | 'status')} className="w-full">
-                <TabsList className="grid grid-cols-3 w-full">
+                <TabsList className="grid grid-cols-3 w-full mb-4">
                   <TabsTrigger value="daily">Daily Trend</TabsTrigger>
                   <TabsTrigger value="category">By Category</TabsTrigger>
                   <TabsTrigger value="status">By Status</TabsTrigger>
                 </TabsList>
+                
+                <TabsContent value="daily">
+                  <RechartsPlaceholder type="line" title="Daily Incident" height={400} />
+                </TabsContent>
+                
+                <TabsContent value="category">
+                  <RechartsPlaceholder type="bar" title="Incidents by Category" height={400} />
+                </TabsContent>
+                
+                <TabsContent value="status">
+                  <RechartsPlaceholder type="pie" title="Incidents by Status" height={400} />
+                </TabsContent>
               </Tabs>
-            </CardHeader>
-            
-            <CardContent>
-              <TabsContent value="daily" className="mt-0">
-                <RechartsPlaceholder type="line" title="Daily Incident" height={400} />
-              </TabsContent>
-              
-              <TabsContent value="category" className="mt-0">
-                <RechartsPlaceholder type="bar" title="Incidents by Category" height={400} />
-              </TabsContent>
-              
-              <TabsContent value="status" className="mt-0">
-                <RechartsPlaceholder type="pie" title="Incidents by Status" height={400} />
-              </TabsContent>
             </CardContent>
           </Card>
         </div>
