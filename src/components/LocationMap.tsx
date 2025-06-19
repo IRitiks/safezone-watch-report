@@ -1,5 +1,39 @@
 
-import React, { useEffect, useState } from 'react';
+import React from 'react';
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
+
+// Fix for default markers in Leaflet with webpack
+delete (L.Icon.Default.prototype as any)._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
+  iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
+  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+});
+
+// Custom icons for different marker types
+const emergencyIcon = new L.Icon({
+  iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
+  iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
+  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowSize: [41, 41],
+  className: 'emergency-marker'
+});
+
+const normalIcon = new L.Icon({
+  iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
+  iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
+  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowSize: [41, 41],
+  className: 'normal-marker'
+});
 
 interface LocationMapProps {
   latitude: number;
@@ -23,44 +57,48 @@ const LocationMap: React.FC<LocationMapProps> = ({
   height = '400px',
   width = '100%'
 }) => {
-  const [mapLoaded, setMapLoaded] = useState(false);
-  
-  useEffect(() => {
-    // In a real app, this would initialize Leaflet or Google Maps
-    // For this demo, we'll just display a placeholder with the coordinates
-    const timer = setTimeout(() => {
-      setMapLoaded(true);
-    }, 1000);
-    
-    return () => clearTimeout(timer);
-  }, []);
-  
   return (
-    <div 
-      style={{ height, width }}
-      className="bg-gray-100 rounded-md flex flex-col items-center justify-center relative overflow-hidden"
-    >
-      {!mapLoaded ? (
-        <div className="text-gray-500">Loading map...</div>
-      ) : (
-        <>
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="w-full h-full bg-gray-200 border border-gray-300" style={{ background: `url('https://api.mapbox.com/styles/v1/mapbox/streets-v11/static/${longitude},${latitude},${zoom},0/500x300?access_token=pk.mock')` }}>
-              {/* This would be a real map in the actual implementation */}
-            </div>
-          </div>
-          
-          <div className="absolute bottom-2 left-2 bg-white p-2 rounded shadow-md text-xs">
-            <div>Latitude: {latitude.toFixed(6)}</div>
-            <div>Longitude: {longitude.toFixed(6)}</div>
-            <div>Markers: {markers.length}</div>
-          </div>
-          
-          <div className="absolute top-2 right-2 bg-white/80 py-1 px-2 rounded text-xs">
-            (Map Placeholder)
-          </div>
-        </>
-      )}
+    <div style={{ height, width }} className="relative">
+      <MapContainer
+        center={[latitude, longitude]}
+        zoom={zoom}
+        style={{ height: '100%', width: '100%' }}
+        className="rounded-md"
+      >
+        <TileLayer
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        />
+        
+        {markers.map((marker, index) => (
+          <Marker
+            key={index}
+            position={[marker.latitude, marker.longitude]}
+            icon={marker.type === 'emergency' ? emergencyIcon : normalIcon}
+          >
+            <Popup>
+              <div className="text-sm">
+                <h3 className="font-medium">{marker.title || 'Incident'}</h3>
+                <p className="text-gray-600">
+                  {marker.type === 'emergency' ? '🚨 Emergency Report' : '📍 Regular Report'}
+                </p>
+                <p className="text-xs text-gray-500">
+                  {marker.latitude.toFixed(6)}, {marker.longitude.toFixed(6)}
+                </p>
+              </div>
+            </Popup>
+          </Marker>
+        ))}
+      </MapContainer>
+      
+      <style jsx>{`
+        .emergency-marker {
+          filter: hue-rotate(0deg) saturate(2) brightness(1.2);
+        }
+        .normal-marker {
+          filter: hue-rotate(200deg) saturate(1.5);
+        }
+      `}</style>
     </div>
   );
 };

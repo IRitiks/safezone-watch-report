@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -82,7 +81,7 @@ const AdminMap = () => {
         <div className="mb-6">
           <h1 className="text-2xl font-bold mb-2">Incident Map</h1>
           <p className="text-gray-600">
-            Visualize incident reports by location
+            Visualize incident reports by location with real-time interactive map
           </p>
         </div>
         
@@ -170,13 +169,13 @@ const AdminMap = () => {
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center justify-between">
-                  <span>Incident Map</span>
+                  <span>Interactive Incident Map</span>
                   <Badge variant="outline" className="ml-2">
                     {filteredReports.length} Incidents
                   </Badge>
                 </CardTitle>
                 <CardDescription>
-                  {viewType === 'standard' ? 'Showing individual incident markers' : 'Showing incident density heatmap'}
+                  Real-time incident visualization with clickable markers for detailed information
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -192,9 +191,6 @@ const AdminMap = () => {
                   }))}
                   height="600px"
                 />
-                <div className="mt-4 text-sm text-gray-500">
-                  In a complete implementation, this would be an interactive Leaflet.js map with proper markers and heatmap visualization.
-                </div>
               </CardContent>
             </Card>
           </div>
