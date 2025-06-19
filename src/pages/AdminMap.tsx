@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -14,7 +15,7 @@ const AdminMap = () => {
   const { reports } = useData();
   const [timeRange, setTimeRange] = useState('week');
   const [categoryFilter, setCategoryFilter] = useState('all');
-  const [viewType, setViewType] = useState<'standard' | 'heatmap'>('standard');
+  const [viewType, setViewType] = useState('standard');
   const [showEmergency, setShowEmergency] = useState(true);
   const [showNonEmergency, setShowNonEmergency] = useState(true);
   
@@ -73,6 +74,10 @@ const AdminMap = () => {
     }
     reportsByCategory[category].push(report);
   });
+
+  const handleViewTypeChange = (value: string) => {
+    setViewType(value);
+  };
   
   return (
     <div className="min-h-screen bg-gray-100">
@@ -124,7 +129,7 @@ const AdminMap = () => {
               
               <div>
                 <Label htmlFor="view-type" className="block mb-2">View Type</Label>
-                <Tabs value={viewType} onValueChange={(v) => setViewType(v as 'standard' | 'heatmap')}>
+                <Tabs value={viewType} onValueChange={handleViewTypeChange}>
                   <TabsList className="grid grid-cols-2 w-full">
                     <TabsTrigger value="standard">Standard</TabsTrigger>
                     <TabsTrigger value="heatmap">Heatmap</TabsTrigger>
@@ -202,14 +207,14 @@ const AdminMap = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-6">
-                  {Object.entries(reportsByCategory).map(([category, reports]) => (
+                  {Object.entries(reportsByCategory).map(([category, categoryReports]) => (
                     <div key={category}>
                       <div className="flex items-center justify-between mb-2">
                         <h3 className="font-medium">{category}</h3>
-                        <Badge>{reports.length}</Badge>
+                        <Badge>{categoryReports.length}</Badge>
                       </div>
                       <div className="space-y-2 max-h-60 overflow-y-auto">
-                        {reports.slice(0, 3).map(report => (
+                        {categoryReports.slice(0, 3).map(report => (
                           <div key={report.id} className="bg-gray-50 p-2 rounded text-sm">
                             <div className="flex items-start">
                               {report.emergency && <AlertTriangle className="h-4 w-4 text-red-500 mr-1 mt-0.5" />}
@@ -221,9 +226,9 @@ const AdminMap = () => {
                             </div>
                           </div>
                         ))}
-                        {reports.length > 3 && (
+                        {categoryReports.length > 3 && (
                           <div className="text-xs text-center text-gray-500">
-                            +{reports.length - 3} more incidents
+                            +{categoryReports.length - 3} more incidents
                           </div>
                         )}
                       </div>
