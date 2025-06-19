@@ -6,9 +6,10 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import { DataProvider } from "./context/DataContext";
-import React from "react"; // Add explicit React import
+import React from "react";
 
 // Pages
+import Login from "./pages/Login";
 import Home from "./pages/Home";
 import ReportIncident from "./pages/ReportIncident";
 import ViewIncidents from "./pages/ViewIncidents";
@@ -23,7 +24,7 @@ import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
-// Protected route component
+// Protected route component for admin routes
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { currentUser, isAdmin, loading } = useAuth();
   
@@ -50,12 +51,17 @@ const App = () => (
               <Toaster />
               <Sonner />
               <Routes>
-                {/* Public Routes */}
-                <Route path="/" element={<Home />} />
+                {/* Entry point - Login page */}
+                <Route path="/" element={<Login />} />
+                
+                {/* User Routes */}
+                <Route path="/home" element={<Home />} />
                 <Route path="/report" element={<ReportIncident />} />
                 <Route path="/incidents" element={<ViewIncidents />} />
                 <Route path="/emergency" element={<EmergencySOS />} />
                 <Route path="/safety-tips" element={<SafetyTips />} />
+                
+                {/* Admin Login */}
                 <Route path="/admin/login" element={<AdminLogin />} />
                 
                 {/* Admin Protected Routes */}

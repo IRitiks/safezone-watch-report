@@ -16,7 +16,7 @@ const Navbar: React.FC = () => {
       <div className="container mx-auto">
         {/* Mobile bottom navigation bar */}
         <div className="flex justify-around md:hidden">
-          <Link to="/" className={`flex flex-col items-center p-2 ${isActive('/') ? 'text-safezone-purple' : 'text-gray-600'}`}>
+          <Link to="/home" className={`flex flex-col items-center p-2 ${isActive('/home') ? 'text-safezone-purple' : 'text-gray-600'}`}>
             <Shield size={24} />
             <span className="text-xs mt-1">Home</span>
           </Link>
@@ -40,14 +40,14 @@ const Navbar: React.FC = () => {
         {/* Desktop top navigation bar */}
         <div className="hidden md:flex justify-between items-center py-4">
           <div className="flex items-center">
-            <Link to="/" className="flex items-center">
+            <Link to="/home" className="flex items-center">
               <Shield className="h-8 w-8 text-safezone-purple mr-2" />
               <span className="text-xl font-bold text-safezone-purple">SafeZone</span>
             </Link>
           </div>
           
           <div className="flex items-center space-x-6">
-            <Link to="/" className={`${isActive('/') ? 'text-safezone-purple font-medium' : 'text-gray-600 hover:text-safezone-purple'}`}>
+            <Link to="/home" className={`${isActive('/home') ? 'text-safezone-purple font-medium' : 'text-gray-600 hover:text-safezone-purple'}`}>
               Home
             </Link>
             <Link to="/incidents" className={`${isActive('/incidents') ? 'text-safezone-purple font-medium' : 'text-gray-600 hover:text-safezone-purple'}`}>
