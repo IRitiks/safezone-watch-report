@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -117,8 +116,8 @@ const ViewIncidents = () => {
           <TabsContent value="map" className="mt-0">
             <div className="bg-white p-4 rounded-lg shadow-sm">
               <LocationMap 
-                latitude={40.7128} 
-                longitude={-74.0060}
+                latitude={23.2599} 
+                longitude={77.4126}
                 zoom={12}
                 markers={filteredReports.map(report => ({
                   latitude: report.location.latitude,

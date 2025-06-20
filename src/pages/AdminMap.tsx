@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -185,8 +184,8 @@ const AdminMap = () => {
               </CardHeader>
               <CardContent>
                 <LocationMap 
-                  latitude={40.7128} 
-                  longitude={-74.0060}
+                  latitude={23.2599} 
+                  longitude={77.4126}
                   zoom={12}
                   markers={filteredReports.map(report => ({
                     latitude: report.location.latitude,

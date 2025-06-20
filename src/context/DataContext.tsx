@@ -53,9 +53,9 @@ const mockReports: Report[] = [
     id: '1',
     description: 'Suspicious activity near the park entrance. Person in dark clothing looking into parked cars.',
     location: {
-      latitude: 40.7128,
-      longitude: -74.0060,
-      address: 'Central Park, New York, NY'
+      latitude: 23.2599,
+      longitude: 77.4126,
+      address: 'Upper Lake, Bhopal, Madhya Pradesh'
     },
     timestamp: Date.now() - 3600000 * 2, // 2 hours ago
     status: 'new',
@@ -64,11 +64,11 @@ const mockReports: Report[] = [
   },
   {
     id: '2',
-    description: 'Hit and run accident involving a silver sedan. License plate partially visible: ABC12**',
+    description: 'Hit and run accident involving a silver sedan. License plate partially visible: MP09**',
     location: {
-      latitude: 40.7112,
-      longitude: -74.0055,
-      address: '123 Broadway, New York, NY'
+      latitude: 23.2315,
+      longitude: 77.4219,
+      address: 'DB City Mall, Bhopal, Madhya Pradesh'
     },
     timestamp: Date.now() - 3600000 * 5, // 5 hours ago
     status: 'reviewing',
@@ -79,9 +79,9 @@ const mockReports: Report[] = [
     id: '3',
     description: 'Graffiti on public building wall, appears to be gang-related symbols.',
     location: {
-      latitude: 40.7145,
-      longitude: -74.0070,
-      address: '456 5th Avenue, New York, NY'
+      latitude: 23.2640,
+      longitude: 77.4060,
+      address: 'Collectorate Complex, Bhopal, Madhya Pradesh'
     },
     timestamp: Date.now() - 86400000, // 1 day ago
     status: 'resolved',
@@ -92,9 +92,9 @@ const mockReports: Report[] = [
     id: '4',
     description: 'Emergency: Person collapsed on sidewalk, appears unresponsive.',
     location: {
-      latitude: 40.7150,
-      longitude: -74.0080,
-      address: '789 Park Avenue, New York, NY'
+      latitude: 23.2470,
+      longitude: 77.4030,
+      address: 'New Market Area, Bhopal, Madhya Pradesh'
     },
     timestamp: Date.now() - 1800000, // 30 minutes ago
     status: 'new',
@@ -105,9 +105,9 @@ const mockReports: Report[] = [
     id: '5',
     description: 'Lost child, approximately 6 years old, wearing red jacket and blue jeans.',
     location: {
-      latitude: 40.7140,
-      longitude: -74.0050,
-      address: 'City Mall, New York, NY'
+      latitude: 23.2340,
+      longitude: 77.4200,
+      address: 'Phoenix Citadel Mall, Bhopal, Madhya Pradesh'
     },
     timestamp: Date.now() - 7200000, // 2 hours ago
     status: 'reviewing',

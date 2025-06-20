@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
@@ -225,8 +224,8 @@ const ReportForm: React.FC = () => {
     
     try {
       const reportLocation = location || {
-        latitude: 40.7128, 
-        longitude: -74.0060,
+        latitude: 23.2599, 
+        longitude: 77.4126,
         address: manualLocation || 'Location manually entered'
       };
       
