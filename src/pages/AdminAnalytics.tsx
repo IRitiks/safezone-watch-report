@@ -3,31 +3,11 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { BarChart, LineChart, PieChart } from "recharts";
-import { BarChart as BarChartIcon, LineChart as LineIcon, PieChart as PieChartIcon, TrendingUp, TrendingDown, Clock } from 'lucide-react';
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
+import { BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Legend } from "recharts";
+import { TrendingUp, TrendingDown, Clock } from 'lucide-react';
 import AdminNavbar from '@/components/AdminNavbar';
 import { useData, Report } from '@/context/DataContext';
-
-// This is a placeholder component to simulate Recharts
-// In a real implementation, we would use the actual Recharts components
-const RechartsPlaceholder: React.FC<{
-  type: 'bar' | 'line' | 'pie';
-  title: string;
-  height?: number;
-}> = ({ type, title, height = 300 }) => (
-  <div 
-    className="border border-gray-200 rounded-md flex flex-col items-center justify-center bg-gray-50"
-    style={{ height }}
-  >
-    <div className="text-gray-400 mb-2">
-      {type === 'bar' && <BarChartIcon size={24} />}
-      {type === 'line' && <LineIcon size={24} />}
-      {type === 'pie' && <PieChartIcon size={24} />}
-    </div>
-    <div className="text-sm text-gray-500">{title} Chart Placeholder</div>
-    <div className="text-xs text-gray-400 mt-1">(Recharts would render here)</div>
-  </div>
-);
 
 const AdminAnalytics = () => {
   const { reports } = useData();
@@ -121,6 +101,32 @@ const AdminAnalytics = () => {
   
   const analyticsData = getAnalyticsData();
   
+  // Prepare data for charts
+  const dailyChartData = Object.entries(analyticsData.dailyData)
+    .map(([date, count]) => ({ date, incidents: count }))
+    .reverse();
+  
+  const categoryChartData = Object.entries(analyticsData.categoryData)
+    .map(([category, count]) => ({ category, count }))
+    .sort((a, b) => b.count - a.count);
+  
+  const statusChartData = [
+    { name: 'New', value: analyticsData.statusData.new, color: '#3b82f6' },
+    { name: 'Reviewing', value: analyticsData.statusData.reviewing, color: '#f59e0b' },
+    { name: 'Resolved', value: analyticsData.statusData.resolved, color: '#10b981' }
+  ];
+  
+  const chartConfig = {
+    incidents: {
+      label: "Incidents",
+      color: "#8b5cf6",
+    },
+    count: {
+      label: "Count",
+      color: "#8b5cf6",
+    }
+  };
+  
   return (
     <div className="min-h-screen bg-gray-100">
       <AdminNavbar />
@@ -205,15 +211,56 @@ const AdminAnalytics = () => {
                 </TabsList>
                 
                 <TabsContent value="daily">
-                  <RechartsPlaceholder type="line" title="Daily Incident" height={400} />
+                  <ChartContainer config={chartConfig} className="h-[400px]">
+                    <LineChart data={dailyChartData}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="date" />
+                      <YAxis />
+                      <ChartTooltip content={<ChartTooltipContent />} />
+                      <Line 
+                        type="monotone" 
+                        dataKey="incidents" 
+                        stroke="var(--color-incidents)" 
+                        strokeWidth={2}
+                        dot={{ fill: "var(--color-incidents)" }}
+                      />
+                    </LineChart>
+                  </ChartContainer>
                 </TabsContent>
                 
                 <TabsContent value="category">
-                  <RechartsPlaceholder type="bar" title="Incidents by Category" height={400} />
+                  <ChartContainer config={chartConfig} className="h-[400px]">
+                    <BarChart data={categoryChartData}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="category" />
+                      <YAxis />
+                      <ChartTooltip content={<ChartTooltipContent />} />
+                      <Bar dataKey="count" fill="var(--color-count)" />
+                    </BarChart>
+                  </ChartContainer>
                 </TabsContent>
                 
                 <TabsContent value="status">
-                  <RechartsPlaceholder type="pie" title="Incidents by Status" height={400} />
+                  <ChartContainer config={chartConfig} className="h-[400px]">
+                    <PieChart>
+                      <Pie
+                        data={statusChartData}
+                        cx="50%"
+                        cy="50%"
+                        labelLine={false}
+                        label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                        outerRadius={120}
+                        fill="#8884d8"
+                        dataKey="value"
+                      >
+                        {statusChartData.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={entry.color} />
+                        ))}
+                      </Pie>
+                      <ChartTooltip content={<ChartTooltipContent />} />
+                      <Legend />
+                    </PieChart>
+                  </ChartContainer>
                 </TabsContent>
               </Tabs>
             </CardContent>
@@ -262,7 +309,24 @@ const AdminAnalytics = () => {
               <CardDescription>Current status of reported incidents</CardDescription>
             </CardHeader>
             <CardContent>
-              <RechartsPlaceholder type="pie" title="Resolution Status" height={250} />
+              <ChartContainer config={chartConfig} className="h-[250px]">
+                <PieChart>
+                  <Pie
+                    data={statusChartData}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={40}
+                    outerRadius={80}
+                    paddingAngle={5}
+                    dataKey="value"
+                  >
+                    {statusChartData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  <ChartTooltip content={<ChartTooltipContent />} />
+                </PieChart>
+              </ChartContainer>
               
               <div className="grid grid-cols-3 gap-4 mt-4">
                 <div className="bg-blue-50 p-3 rounded-md text-center">
