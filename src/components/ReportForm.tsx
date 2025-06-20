@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,7 +9,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { AlertTriangle, Camera, MapPin, Mic } from 'lucide-react';
+import { AlertTriangle, Camera, MapPin, Mic, MicOff, Play, Stop, X, Upload } from 'lucide-react';
 import { useData } from '@/context/DataContext';
 import { useToast } from '@/hooks/use-toast';
 
@@ -24,12 +24,35 @@ const ReportForm: React.FC = () => {
   const [location, setLocation] = useState<{latitude: number, longitude: number, address?: string} | null>(null);
   const [loadingLocation, setLoadingLocation] = useState(false);
   const [manualLocation, setManualLocation] = useState('');
-  const [mediaType, setMediaType] = useState<'none' | 'photo' | 'audio'>('none');
-  const [media, setMedia] = useState<File | null>(null);
+  
+  // Media states
+  const [photos, setPhotos] = useState<File[]>([]);
+  const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
+  const [isRecording, setIsRecording] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [recordingTime, setRecordingTime] = useState(0);
+  
+  // Media refs
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const recordingIntervalRef = useRef<NodeJS.Timeout | null>(null);
   
   // Get current location when component mounts
   useEffect(() => {
     getLocation();
+  }, []);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (recordingIntervalRef.current) {
+        clearInterval(recordingIntervalRef.current);
+      }
+      if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'recording') {
+        mediaRecorderRef.current.stop();
+      }
+    };
   }, []);
   
   const getLocation = () => {
@@ -49,8 +72,6 @@ const ReportForm: React.FC = () => {
           latitude: position.coords.latitude,
           longitude: position.coords.longitude
         });
-        // In a real app, we would use a reverse geocoding service to get the address
-        // For demo, we'll just use the coordinates
         setLoadingLocation(false);
       },
       (error) => {
@@ -64,23 +85,121 @@ const ReportForm: React.FC = () => {
       }
     );
   };
-  
+
   const handlePhotoCapture = () => {
-    // For demo purposes only - in real app would use device camera APIs or file input
-    toast({
-      title: "Photo capture",
-      description: "Camera access would be requested here in a complete implementation."
-    });
-    setMediaType('photo');
+    fileInputRef.current?.click();
   };
-  
-  const handleAudioCapture = () => {
-    // For demo purposes only - in real app would use device microphone APIs
-    toast({
-      title: "Audio recording",
-      description: "Microphone access would be requested here in a complete implementation."
-    });
-    setMediaType('audio');
+
+  const handlePhotoSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    if (files) {
+      const newPhotos = Array.from(files).filter(file => file.type.startsWith('image/'));
+      if (newPhotos.length + photos.length > 5) {
+        toast({
+          title: "Too many photos",
+          description: "You can only upload up to 5 photos.",
+          variant: "destructive"
+        });
+        return;
+      }
+      setPhotos(prev => [...prev, ...newPhotos]);
+      toast({
+        title: "Photos added",
+        description: `${newPhotos.length} photo(s) added successfully.`,
+      });
+    }
+  };
+
+  const removePhoto = (index: number) => {
+    setPhotos(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const startRecording = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const mediaRecorder = new MediaRecorder(stream);
+      mediaRecorderRef.current = mediaRecorder;
+      
+      const chunks: Blob[] = [];
+      mediaRecorder.ondataavailable = (event) => {
+        if (event.data.size > 0) {
+          chunks.push(event.data);
+        }
+      };
+      
+      mediaRecorder.onstop = () => {
+        const blob = new Blob(chunks, { type: 'audio/wav' });
+        setAudioBlob(blob);
+        stream.getTracks().forEach(track => track.stop());
+      };
+      
+      mediaRecorder.start();
+      setIsRecording(true);
+      setRecordingTime(0);
+      
+      recordingIntervalRef.current = setInterval(() => {
+        setRecordingTime(prev => prev + 1);
+      }, 1000);
+      
+      toast({
+        title: "Recording started",
+        description: "Recording audio... Tap stop when finished.",
+      });
+    } catch (error) {
+      console.error('Error starting recording:', error);
+      toast({
+        title: "Recording error",
+        description: "Unable to access microphone. Please check permissions.",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const stopRecording = () => {
+    if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'recording') {
+      mediaRecorderRef.current.stop();
+      setIsRecording(false);
+      if (recordingIntervalRef.current) {
+        clearInterval(recordingIntervalRef.current);
+      }
+      toast({
+        title: "Recording stopped",
+        description: "Audio recorded successfully.",
+      });
+    }
+  };
+
+  const playAudio = () => {
+    if (audioBlob && !isPlaying) {
+      const audioUrl = URL.createObjectURL(audioBlob);
+      audioRef.current = new Audio(audioUrl);
+      audioRef.current.onended = () => setIsPlaying(false);
+      audioRef.current.play();
+      setIsPlaying(true);
+    }
+  };
+
+  const stopAudio = () => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+      setIsPlaying(false);
+    }
+  };
+
+  const removeAudio = () => {
+    setAudioBlob(null);
+    setRecordingTime(0);
+    if (audioRef.current) {
+      audioRef.current.pause();
+      setIsPlaying(false);
+    }
+  };
+
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
   
   const handleSubmit = async (e: React.FormEvent) => {
@@ -105,23 +224,39 @@ const ReportForm: React.FC = () => {
     }
     
     try {
-      // Use provided location or fallback to a default for demo
       const reportLocation = location || {
         latitude: 40.7128, 
         longitude: -74.0060,
         address: manualLocation || 'Location manually entered'
       };
       
+      // Create media URLs array for submission
+      const mediaUrls: string[] = [];
+      
+      // In a real app, you would upload files to a storage service and get URLs
+      // For demo purposes, we'll create object URLs
+      if (photos.length > 0) {
+        photos.forEach((photo, index) => {
+          const photoUrl = URL.createObjectURL(photo);
+          mediaUrls.push(photoUrl);
+          console.log(`Photo ${index + 1} ready for upload:`, photo.name, photo.size);
+        });
+      }
+      
+      if (audioBlob) {
+        const audioUrl = URL.createObjectURL(audioBlob);
+        mediaUrls.push(audioUrl);
+        console.log('Audio ready for upload:', audioBlob.size, 'bytes');
+      }
+      
       await addReport({
         description,
         location: reportLocation,
         emergency,
         category: category || undefined,
-        // In a real app, we would upload media and get URLs
-        mediaUrls: media ? ['https://example.com/mockurl'] : undefined
+        mediaUrls: mediaUrls.length > 0 ? mediaUrls : undefined
       });
       
-      // Navigate back to home after submission
       navigate('/');
       
     } catch (error) {
@@ -231,34 +366,116 @@ const ReportForm: React.FC = () => {
             )}
           </div>
           
-          {/* Media Capture */}
-          <div className="space-y-2">
-            <Label>Add Media (Optional)</Label>
-            <div className="flex space-x-2">
+          {/* Photo Capture */}
+          <div className="space-y-3">
+            <Label>Add Photos (Optional)</Label>
+            <div className="space-y-3">
               <Button 
                 type="button" 
-                variant={mediaType === 'photo' ? 'default' : 'outline'} 
-                className="flex-1"
+                variant="outline" 
+                className="w-full"
                 onClick={handlePhotoCapture}
               >
                 <Camera className="h-4 w-4 mr-2" />
-                Photo
+                Add Photos ({photos.length}/5)
               </Button>
-              <Button 
-                type="button" 
-                variant={mediaType === 'audio' ? 'default' : 'outline'} 
-                className="flex-1"
-                onClick={handleAudioCapture}
-              >
-                <Mic className="h-4 w-4 mr-2" />
-                Audio
-              </Button>
+              
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                multiple
+                className="hidden"
+                onChange={handlePhotoSelect}
+              />
+              
+              {photos.length > 0 && (
+                <div className="grid grid-cols-2 gap-2">
+                  {photos.map((photo, index) => (
+                    <div key={index} className="relative">
+                      <img
+                        src={URL.createObjectURL(photo)}
+                        alt={`Photo ${index + 1}`}
+                        className="w-full h-24 object-cover rounded border"
+                      />
+                      <Button
+                        type="button"
+                        variant="destructive"
+                        size="sm"
+                        className="absolute top-1 right-1 h-6 w-6 p-0"
+                        onClick={() => removePhoto(index)}
+                      >
+                        <X className="h-3 w-3" />
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
-            {mediaType !== 'none' && (
-              <div className="text-sm text-gray-500 italic">
-                Media capture functionality would be implemented here in a complete application.
-              </div>
-            )}
+          </div>
+          
+          {/* Audio Recording */}
+          <div className="space-y-3">
+            <Label>Add Audio Recording (Optional)</Label>
+            <div className="space-y-3">
+              {!audioBlob ? (
+                <div className="flex items-center space-x-2">
+                  <Button
+                    type="button"
+                    variant={isRecording ? "destructive" : "outline"}
+                    onClick={isRecording ? stopRecording : startRecording}
+                    className="flex-1"
+                  >
+                    {isRecording ? (
+                      <>
+                        <MicOff className="h-4 w-4 mr-2" />
+                        Stop Recording
+                      </>
+                    ) : (
+                      <>
+                        <Mic className="h-4 w-4 mr-2" />
+                        Start Recording
+                      </>
+                    )}
+                  </Button>
+                  {isRecording && (
+                    <div className="text-sm font-mono text-red-500">
+                      {formatTime(recordingTime)}
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="bg-gray-50 p-3 rounded border">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-2">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={isPlaying ? stopAudio : playAudio}
+                      >
+                        {isPlaying ? (
+                          <Stop className="h-3 w-3" />
+                        ) : (
+                          <Play className="h-3 w-3" />
+                        )}
+                      </Button>
+                      <span className="text-sm">
+                        Audio Recording ({formatTime(recordingTime)})
+                      </span>
+                    </div>
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      size="sm"
+                      onClick={removeAudio}
+                    >
+                      <X className="h-3 w-3" />
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </CardContent>
         
