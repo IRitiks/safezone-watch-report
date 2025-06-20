@@ -9,7 +9,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { AlertTriangle, Camera, MapPin, Mic, MicOff, Play, Stop, X, Upload } from 'lucide-react';
+import { AlertTriangle, Camera, MapPin, Mic, MicOff, Play, Square, X, Upload } from 'lucide-react';
 import { useData } from '@/context/DataContext';
 import { useToast } from '@/hooks/use-toast';
 
@@ -455,7 +455,7 @@ const ReportForm: React.FC = () => {
                         onClick={isPlaying ? stopAudio : playAudio}
                       >
                         {isPlaying ? (
-                          <Stop className="h-3 w-3" />
+                          <Square className="h-3 w-3" />
                         ) : (
                           <Play className="h-3 w-3" />
                         )}
